@@ -1,0 +1,16 @@
+server:
+    port: 1001
+
+spring:
+    main:
+        web-application-type: servlet
+
+    profiles:
+        default: local
+    
+    application:
+        name: account-service
+    
+    config:
+        import:
+            - security/application-db.yml
