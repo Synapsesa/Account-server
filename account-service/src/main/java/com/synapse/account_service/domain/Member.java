@@ -1,5 +1,7 @@
 package com.synapse.account_service.domain;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import com.synapse.account_service.common.BaseEntity;
 import com.synapse.account_service.domain.enums.MemberRole;
 
@@ -19,10 +21,10 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true, length = 50)
@@ -60,5 +62,9 @@ public class Member extends BaseEntity {
         if (subscription != null) {
             subscription.setMemberInternal(this); // 무한 루프 방지를 위해 내부 메서드 호출
         }
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(this.password);
     }
 }
