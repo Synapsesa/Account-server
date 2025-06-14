@@ -1,17 +1,15 @@
 package com.synapse.account_service.domain;
 
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-
 import com.synapse.account_service.common.BaseEntity;
 import com.synapse.account_service.domain.enums.MemberRole;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "members")
@@ -53,5 +51,14 @@ public class Member extends BaseEntity {
         this.email = email;
         this.provider = provider;
         this.picture = picture;
+        this.registrationId = registrationId;
+        this.role = role;
+    }
+
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
+        if (subscription != null) {
+            subscription.setMemberInternal(this); // 무한 루프 방지를 위해 내부 메서드 호출
+        }
     }
 }
