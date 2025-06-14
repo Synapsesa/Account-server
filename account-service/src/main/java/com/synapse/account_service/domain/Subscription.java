@@ -8,6 +8,7 @@ import com.synapse.account_service.domain.enums.SubscriptionTier;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "subscription")
@@ -33,5 +34,9 @@ public class Subscription extends BaseTimeEntity {
         this.member = member;
         this.tier = tier;
         this.nextRenewalDate = nextRenewalDate;
+    }
+
+    protected void setMemberInternal(Member member) {
+        this.member = member;
     }
 }
