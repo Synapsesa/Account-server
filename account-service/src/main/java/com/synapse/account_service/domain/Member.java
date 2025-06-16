@@ -1,5 +1,7 @@
 package com.synapse.account_service.domain;
 
+import java.util.UUID;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.synapse.account_service.common.BaseEntity;
@@ -17,9 +19,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "members")
 public class Member extends BaseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "member_id")
-    private Long id;
+    private UUID id;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -47,7 +49,8 @@ public class Member extends BaseEntity {
     private Subscription subscription;
 
     @Builder
-    public Member(String username, String password, String email, String provider, String picture, String registrationId, MemberRole role) {
+    public Member(UUID id, String username, String password, String email, String provider, String picture, String registrationId, MemberRole role) {
+        this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;

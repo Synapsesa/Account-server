@@ -1,6 +1,7 @@
 package com.synapse.account_service.domain;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 import com.synapse.account_service.common.BaseTimeEntity;
 import com.synapse.account_service.domain.enums.SubscriptionTier;
@@ -14,9 +15,9 @@ import lombok.*;
 @Table(name = "subscription")
 public class Subscription extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "subscription_id")
-    private Long id;
+    private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

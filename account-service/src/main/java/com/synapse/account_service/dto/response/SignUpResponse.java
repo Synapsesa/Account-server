@@ -1,9 +1,11 @@
 package com.synapse.account_service.dto.response;
 
+import java.util.UUID;
+
 import com.synapse.account_service.domain.Member;
 
 public record SignUpResponse(
-    Long id,
+    UUID id,
     String email,
     String username,
     String role
