@@ -37,7 +37,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication) throws IOException, ServletException {
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
 
-        String memberId = principalUser.member().getId().toString();
+        String memberId = principalUser.providerUser() == null ? principalUser.member().getId().toString() : principalUser.providerUser().getId();
 
         String role = authentication.getAuthorities().stream()
                 .findFirst()
