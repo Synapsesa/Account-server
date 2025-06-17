@@ -13,25 +13,23 @@ import org.springframework.http.MediaType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.synapse.account_service.config.SecurityConfig;
 import com.synapse.account_service.dto.request.SignUpRequest;
 import com.synapse.account_service.dto.response.SignUpResponse;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service.exception.GlobalExceptionHandler;
 import com.synapse.account_service.exception.DuplicatedException;
 import com.synapse.account_service.service.AccountService;
-import com.synapse.account_service.service.CustomUserDetailsService;
-import com.synapse.account_service.service.handler.LoginFailureHandler;
-import com.synapse.account_service.service.handler.LoginSuccessHandler;
 
 @WebMvcTest(AccountController.class)
-@Import({GlobalExceptionHandler.class, SecurityConfig.class})
+@AutoConfigureMockMvc(addFilters = false)
+@Import(GlobalExceptionHandler.class)
 public class AccountControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -41,15 +39,6 @@ public class AccountControllerTest {
 
     @MockitoBean
     private AccountService accountService;
-
-    @MockitoBean
-    private CustomUserDetailsService customUserDetailsService;
-
-    @MockitoBean
-    private LoginSuccessHandler loginSuccessHandler;
-
-    @MockitoBean
-    private LoginFailureHandler loginFailureHandler;
 
     @Test
     @DisplayName("회원가입 API 호출 성공")

@@ -3,47 +3,46 @@ package com.synapse.account_service.service;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synapse.account_service.domain.Member;
+import com.synapse.account_service.domain.ProviderUser;
 import com.synapse.account_service.domain.Subscription;
 import com.synapse.account_service.domain.enums.MemberRole;
 import com.synapse.account_service.domain.enums.SubscriptionTier;
-import com.synapse.account_service.dto.request.SignUpRequest;
-import com.synapse.account_service.dto.response.SignUpResponse;
 import com.synapse.account_service.exception.DuplicatedException;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Transactional(readOnly = true)
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class AccountService {
-    private final static String DEFAULT_PROVIDER = "default";
-    private final static String DEFAULT_REGISTRATION_ID = "default";
+public class MemberRegistrationService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
+
+    public Optional<Member> findByProviderAndRegistrationId(String provider, String registrationId) {
+        return memberRepository.findByProviderAndRegistrationId(provider, registrationId);
+    }
+
+    public Optional<Member> findByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
 
     @Transactional
-    public SignUpResponse registerMember(SignUpRequest request) {
-
-        String encodedPassword = passwordEncoder.encode(request.password());
-        
-        Member savedMember = createAndSaveNewMember(
-            request.email(),
-            request.username(),
-            encodedPassword,
-            DEFAULT_PROVIDER,
-            DEFAULT_REGISTRATION_ID
+    public Member registerOauthUser(ProviderUser providerUser) {
+        return createAndSaveNewMember(
+            providerUser.getEmail(),
+            providerUser.getUsername(),
+            providerUser.getPassword(),
+            providerUser.getProvider(),
+            providerUser.getId()
         );
-
-        return SignUpResponse.from(savedMember);
     }
 
     private Member createAndSaveNewMember(String email, String username, String password, String provider, String registrationId) {
@@ -51,6 +50,7 @@ public class AccountService {
         memberRepository.findByEmail(email).ifPresent(m -> {
             throw new DuplicatedException(ExceptionType.DUPLICATED_EMAIL);
         });
+
         memberRepository.findByUsername(username).ifPresent(m -> {
             throw new DuplicatedException(ExceptionType.DUPLICATED_USERNAME);
         });

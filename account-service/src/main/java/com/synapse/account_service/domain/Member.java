@@ -70,4 +70,9 @@ public class Member extends BaseEntity {
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
+
+    public void linkSocialAccount(String provider, String registrationId) {
+        this.provider = provider;
+        this.registrationId = registrationId;
+    }
 }

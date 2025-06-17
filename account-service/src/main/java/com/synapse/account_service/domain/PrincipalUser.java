@@ -9,31 +9,35 @@ import org.springframework.security.oauth2.core.oidc.OidcIdToken;
 import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
-public record PrincipalUser(ProviderUser providerUser) implements UserDetails, OidcUser {
+public record PrincipalUser(ProviderUser providerUser, Member member) implements UserDetails, OidcUser {
+
+    public PrincipalUser(ProviderUser providerUser) {
+        this(providerUser, null);
+    }
     
     @Override
     public String getName() {
-        return providerUser.getUsername();
+        return providerUser != null ? providerUser.getUsername() : member.getUsername();
     }
 
     @Override
     public Map<String, Object> getAttributes() {
-        return providerUser.getAttributes();
+        return providerUser != null ? providerUser.getAttributes() : Map.of();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return providerUser.getAuthorities();
+        return providerUser != null ? providerUser.getAuthorities() : member.getRole().getAuthorities();
     }
 
     @Override
     public String getPassword() {
-        return providerUser.getPassword();
+        return providerUser != null ? providerUser.getPassword() : member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return providerUser.getUsername();
+        return providerUser != null ? providerUser.getUsername() : member.getUsername();
     }
 
     @Override
@@ -63,11 +67,11 @@ public record PrincipalUser(ProviderUser providerUser) implements UserDetails, O
 
     @Override
     public OidcUserInfo getUserInfo() {
-        return null;
+        return providerUser != null ? providerUser.getUserInfo() : null;
     }
 
     @Override
     public OidcIdToken getIdToken() {
-        return null;
+        return providerUser != null ? providerUser.getIdToken() : null;
     }
 }

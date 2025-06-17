@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -38,14 +37,14 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication) throws IOException, ServletException {
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
 
-        UUID memberId = principalUser.providerUser().getId();
+        String memberId = principalUser.providerUser() == null ? principalUser.member().getId().toString() : principalUser.providerUser().getId();
 
         String role = authentication.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
                 .orElseThrow(() -> new InternalAuthenticationServiceException("사용자에게 권한이 설정되어 있지 않습니다."));
         
-        TokenResponse tokenResponse = jwtTokenService.createTokenResponse(memberId.toString(), role);
+        TokenResponse tokenResponse = jwtTokenService.createTokenResponse(memberId, role);
 
         TokenResult refreshToken = tokenResponse.refreshToken();
         long maxAge = Duration.between(Instant.now(), refreshToken.expiresAt()).getSeconds();
