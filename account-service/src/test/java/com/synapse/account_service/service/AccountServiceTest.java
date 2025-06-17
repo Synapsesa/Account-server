@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.synapse.account_service.domain.Member;
-import com.synapse.account_service.domain.enums.MemberRole;
 import com.synapse.account_service.dto.request.SignUpRequest;
 import com.synapse.account_service.dto.response.SignUpResponse;
 import com.synapse.account_service.exception.DuplicatedException;
@@ -41,28 +40,23 @@ public class AccountServiceTest {
     void signUp_success() {
         // given: 테스트 준비
         SignUpRequest request = new SignUpRequest("test@example.com", "테스트유저", "password123");
-        Member member = Member.builder()
-                .email(request.email())
-                .password("encodedPassword")
-                .role(MemberRole.USER)
-                .build();
         
-        // memberRepository.findByEmail이 호출되면, 비어있는 Optional을 반환하도록 설정 (중복 없음)
         given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
-        // passwordEncoder.encode가 호출되면, "encodedPassword"를 반환하도록 설정
+        given(memberRepository.findByUsername(anyString())).willReturn(Optional.empty());
         given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
-        // memberRepository.save가 호출되면, 준비된 member 객체를 반환하도록 설정
-        given(memberRepository.save(any(Member.class))).willReturn(member);
+        given(memberRepository.save(any(Member.class))).willAnswer(invocation -> {
+            Member memberToSave = invocation.getArgument(0);
+            return memberToSave;
+        });
         
         // when: 실제 테스트할 메서드 호출
         SignUpResponse response = accountService.registerMember(request);
         
         // then: 결과 검증
         assertThat(response.email()).isEqualTo("test@example.com");
+        assertThat(response.username()).isEqualTo("테스트유저");
         
-        // passwordEncoder.encode가 한 번 호출되었는지 검증
         verify(passwordEncoder).encode("password123");
-        // memberRepository.save가 한 번 호출되었는지 검증
         verify(memberRepository).save(any(Member.class));
     }
 

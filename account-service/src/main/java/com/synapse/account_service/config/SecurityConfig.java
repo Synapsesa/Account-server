@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -18,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synapse.account_service.convert.authority.CustomAuthorityMapper;
 import com.synapse.account_service.filter.JwtAuthenticationFilter;
+import com.synapse.account_service.service.CustomOAuth2UserService;
 import com.synapse.account_service.service.CustomUserDetailsService;
 import com.synapse.account_service.service.handler.LoginFailureHandler;
 import com.synapse.account_service.service.handler.LoginSuccessHandler;
@@ -31,7 +31,9 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
     private final ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
@@ -44,6 +46,13 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+            .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .successHandler(loginSuccessHandler)
+                .failureHandler(loginFailureHandler)
+            )
+
             .exceptionHandling(
                 exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 
@@ -51,14 +60,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(customUserDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setPasswordEncoder(passwordEncoder);
+        authProvider.setAuthoritiesMapper(customAuthorityMapper());
         return authProvider;
     }
 
