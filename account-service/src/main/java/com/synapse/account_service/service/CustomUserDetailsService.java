@@ -9,17 +9,11 @@ import com.synapse.account_service.convert.ProviderUserRequest;
 import com.synapse.account_service.domain.Member;
 import com.synapse.account_service.domain.PrincipalUser;
 import com.synapse.account_service.domain.ProviderUser;
-import com.synapse.account_service.domain.forms.FormUser;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service.exception.NotFoundException;
-import com.synapse.account_service.repository.MemberRepository;
-
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+public class CustomUserDetailsService extends AbstractOAuth2UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -31,18 +25,4 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return new PrincipalUser(providerUser);
     }
-
-    private ProviderUser providerUser(ProviderUserRequest providerUserRequest) {
-        Member member = providerUserRequest.member();
-        
-        return FormUser.builder()
-            .id(member.getId())
-            .username(member.getUsername())
-            .password(member.getPassword())
-            .email(member.getEmail())
-            .provider(member.getProvider())
-            .authorities(member.getRole().getAuthorities())
-            .build();
-    }
-    
 }

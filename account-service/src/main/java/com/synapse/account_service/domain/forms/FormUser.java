@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.synapse.account_service.domain.ProviderUser;
@@ -68,16 +66,6 @@ public class FormUser implements ProviderUser {
 
     @Override
     public OAuth2User getOAuth2User() {
-        return null;
-    }
-
-    @Override
-    public OidcIdToken getIdToken() {
-        return null;
-    }
-
-    @Override
-    public OidcUserInfo getUserInfo() {
         return null;
     }
 }
