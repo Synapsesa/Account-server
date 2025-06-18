@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.oidc.OidcIdToken;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 public interface ProviderUser {
@@ -26,8 +24,4 @@ public interface ProviderUser {
     Map<String, Object> getAttributes();
 
     OAuth2User getOAuth2User();
-
-    OidcIdToken getIdToken();
-
-    OidcUserInfo getUserInfo();
 }

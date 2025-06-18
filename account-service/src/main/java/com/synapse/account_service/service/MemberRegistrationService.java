@@ -13,8 +13,6 @@ import com.synapse.account_service.domain.ProviderUser;
 import com.synapse.account_service.domain.Subscription;
 import com.synapse.account_service.domain.enums.MemberRole;
 import com.synapse.account_service.domain.enums.SubscriptionTier;
-import com.synapse.account_service.exception.DuplicatedException;
-import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,35 +24,31 @@ public class MemberRegistrationService {
 
     private final MemberRepository memberRepository;
 
-    public Optional<Member> findByProviderAndRegistrationId(String provider, String registrationId) {
-        return memberRepository.findByProviderAndRegistrationId(provider, registrationId);
-    }
-
-    public Optional<Member> findByEmail(String email) {
-        return memberRepository.findByEmail(email);
-    }
-
     @Transactional
-    public Member registerOauthUser(ProviderUser providerUser) {
+    public Member registerOauthUser(String provider, ProviderUser providerUser) {
+        Optional<Member> memberOptional = memberRepository.findBySocialIdOrEmailOrUsername(
+            provider, providerUser.getId(), providerUser.getEmail(), providerUser.getUsername()
+        );
+
+        if (memberOptional.isPresent()) {
+            Member existingMember = memberOptional.get();
+            if (existingMember.getProvider() == null || existingMember.getRegistrationId() == null) {
+                existingMember.linkSocialAccount(provider, providerUser.getId());
+            }
+            return existingMember;
+        }
+
+        // 신규 회원 생성
         return createAndSaveNewMember(
             providerUser.getEmail(),
             providerUser.getUsername(),
             providerUser.getPassword(),
-            providerUser.getProvider(),
+            provider,
             providerUser.getId()
         );
     }
 
     private Member createAndSaveNewMember(String email, String username, String password, String provider, String registrationId) {
-        // 중복 검사
-        memberRepository.findByEmail(email).ifPresent(m -> {
-            throw new DuplicatedException(ExceptionType.DUPLICATED_EMAIL);
-        });
-
-        memberRepository.findByUsername(username).ifPresent(m -> {
-            throw new DuplicatedException(ExceptionType.DUPLICATED_USERNAME);
-        });
-
         Member member = Member.builder()
                 .email(email)
                 .password(password)

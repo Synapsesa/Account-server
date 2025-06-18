@@ -67,11 +67,11 @@ public record PrincipalUser(ProviderUser providerUser, Member member) implements
 
     @Override
     public OidcUserInfo getUserInfo() {
-        return providerUser != null ? providerUser.getUserInfo() : null;
+        return null;
     }
 
     @Override
     public OidcIdToken getIdToken() {
-        return providerUser != null ? providerUser.getIdToken() : null;
+        return null;
     }
 }
