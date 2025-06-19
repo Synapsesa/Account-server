@@ -1,5 +1,6 @@
 package com.synapse.account_service.service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -40,5 +41,17 @@ public class JwtTokenTemplate {
 
     public final DecodedJWT verifyAndDecode(String token) throws JWTVerificationException {
         return verifier.verify(token);
+    }
+
+    // 테스트용 메서드
+    public final String createExpiredTokenForTest(String subject) {
+        Instant now = Instant.now();
+        Instant past = now.minus(Duration.ofMinutes(10)); // 10분 전 만료
+
+        return JWT.create()
+                .withSubject(subject)
+                .withIssuedAt(past)
+                .withExpiresAt(past)
+                .sign(algorithm);
     }
 }

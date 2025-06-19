@@ -44,7 +44,7 @@ public class SecurityConfig {
             .httpBasic(basic -> basic.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/accounts/signup", "/api/accounts/login", "/").permitAll()
+                .requestMatchers("/api/accounts/signup", "/api/accounts/login", "/", "/api/accounts/token/reissue").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

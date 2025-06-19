@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.synapse.account_service.dto.TokenResponse;
 import com.synapse.account_service.dto.TokenResult;
+import com.synapse.account_service.dto.response.TokenResponse;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service.exception.JWTTokenExpiredException;
 import com.synapse.account_service.exception.JWTValidationException;
@@ -46,5 +46,10 @@ public class JwtTokenService {
         } catch (JWTVerificationException e) {
             throw new JWTValidationException(ExceptionType.INVALID_TOKEN);
         }
+    }
+
+    // 테스트용 메서드
+    public String createExpiredTokenForTest(String subject) {
+        return jwtTokenTemplate.createExpiredTokenForTest(subject);
     }
 } 
