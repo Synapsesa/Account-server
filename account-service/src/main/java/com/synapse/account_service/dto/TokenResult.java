@@ -8,6 +8,9 @@ import java.time.Instant;
  * @param token     생성된 JWT 문자열
  * @param expiresAt 토큰의 만료 시간
  */
-public record TokenResult(String token, Instant expiresAt) {
+public record TokenResult(
+    String token, 
+    Instant expiresAt
+) {
     
 }

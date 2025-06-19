@@ -19,8 +19,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.synapse.account_service.dto.TokenResponse;
 import com.synapse.account_service.dto.TokenResult;
+import com.synapse.account_service.dto.response.TokenResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class JwtTokenServiceTest {
