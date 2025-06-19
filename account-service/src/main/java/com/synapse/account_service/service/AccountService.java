@@ -48,11 +48,8 @@ public class AccountService {
 
     private Member createAndSaveNewMember(String email, String username, String password, String provider, String registrationId) {
         // 중복 검사
-        memberRepository.findByEmail(email).ifPresent(m -> {
-            throw new DuplicatedException(ExceptionType.DUPLICATED_EMAIL);
-        });
-        memberRepository.findByUsername(username).ifPresent(m -> {
-            throw new DuplicatedException(ExceptionType.DUPLICATED_USERNAME);
+        memberRepository.findByUsernameAndEmail(username, email).ifPresent(m -> {
+            throw new DuplicatedException(ExceptionType.DUPLICATED_USERNAME_AND_EMAIL);
         });
 
         Member member = Member.builder()

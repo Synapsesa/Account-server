@@ -13,7 +13,7 @@ spring:
         highlight:
             sql: true
         hbm2ddl:
-            auto: create-drop
+            auto: create
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     show-sql: true

@@ -22,7 +22,9 @@ public final class DelegatingProviderUserConverter implements ProviderUserConver
                 new UserDetailsProviderUserConverter(),
                 new OAuth2GoogleProviderUserConverter(),
                 new OAuth2KakaoProviderUserConverter(),
-                new OAuth2KakaoOidcProviderUserConverter());
+                new OAuth2KakaoOidcProviderUserConverter(),
+                new OAuth2NaverProviderUserConverter()
+        );
 
         this.converters = Collections.unmodifiableList(new LinkedList<>(providerUserConverters));
     }

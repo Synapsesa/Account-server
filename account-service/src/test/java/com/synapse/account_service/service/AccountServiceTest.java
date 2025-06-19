@@ -41,8 +41,7 @@ public class AccountServiceTest {
         // given: 테스트 준비
         SignUpRequest request = new SignUpRequest("test@example.com", "테스트유저", "password123");
         
-        given(memberRepository.findByEmail(anyString())).willReturn(Optional.empty());
-        given(memberRepository.findByUsername(anyString())).willReturn(Optional.empty());
+        given(memberRepository.findByUsernameAndEmail(anyString(), anyString())).willReturn(Optional.empty());
         given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
         given(memberRepository.save(any(Member.class))).willAnswer(invocation -> {
             Member memberToSave = invocation.getArgument(0);
@@ -61,15 +60,15 @@ public class AccountServiceTest {
     }
 
     @Test
-    @DisplayName("이메일 중복으로 회원가입 실패")
-    void signUp_fail_withDuplicateEmail() {
+    @DisplayName("이메일 또는 사용자명 중복으로 회원가입 실패")
+    void signUp_fail_withDuplicateUsernameAndEmail() {
         // given
         SignUpRequest request = new SignUpRequest("test@example.com", "테스트유저", "password123");
         
-        // memberRepository.findByEmail이 호출되면, 이미 존재하는 Member 객체를 반환하도록 설정
-        given(memberRepository.findByEmail(anyString())).willReturn(Optional.of(Member.builder().build()));
+        // memberRepository.findByUsernameAndEmail이 호출되면, 이미 존재하는 Member 객체를 반환하도록 설정
+        given(memberRepository.findByUsernameAndEmail(anyString(), anyString())).willReturn(Optional.of(Member.builder().build()));
         
-        // when & then: BusinessException이 발생하는지 검증
+        // when & then: DuplicatedException이 발생하는지 검증
         assertThrows(DuplicatedException.class, () -> {
             accountService.registerMember(request);
         });

@@ -3,7 +3,9 @@ package com.synapse.account_service.domain.enums;
 public class OAuth2Config {
     public enum SocialType {
         GOOGLE("google"),
-        KAKAO("kakao");
+        KAKAO("kakao"),
+        NAVER("naver")
+        ;
 
         private final String socialName;
 
