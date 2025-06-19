@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synapse.account_service.convert.authority.CustomAuthorityMapper;
 import com.synapse.account_service.filter.JwtAuthenticationFilter;
 import com.synapse.account_service.service.CustomOAuth2UserService;
+import com.synapse.account_service.service.CustomOidcUserService;
 import com.synapse.account_service.service.CustomUserDetailsService;
 import com.synapse.account_service.service.handler.LoginFailureHandler;
 import com.synapse.account_service.service.handler.LoginSuccessHandler;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOidcUserService customOidcUserService;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -48,7 +50,10 @@ public class SecurityConfig {
             .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
             .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(customOAuth2UserService)
+                    .oidcUserService(customOidcUserService)
+                )
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
             )
