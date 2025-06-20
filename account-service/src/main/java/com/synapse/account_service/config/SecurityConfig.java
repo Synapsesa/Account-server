@@ -25,10 +25,11 @@ import com.synapse.account_service.service.handler.LoginSuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+    
     private final CustomUserDetailsService customUserDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
@@ -43,11 +44,6 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/accounts/signup", "/api/accounts/login", "/", "/api/accounts/token/reissue").permitAll()
-                .anyRequest().authenticated()
-            )
-            .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo
@@ -57,6 +53,13 @@ public class SecurityConfig {
                 .successHandler(loginSuccessHandler)
                 .failureHandler(loginFailureHandler)
             )
+
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/api/accounts/signup", "/api/accounts/login", "/",
+                            "/api/accounts/token/reissue")
+                    .permitAll()
+                    .anyRequest().authenticated())
+            .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
             .exceptionHandling(
                 exceptionHandlingConfigurer -> exceptionHandlingConfigurer.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
