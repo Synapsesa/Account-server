@@ -9,6 +9,19 @@ spring:
                         scope:
                             - email
                             - profile
+                    account-service:
+                        provider: account
+                        client-id: test-client-id
+                        client-secret: test-client-secret
+                        authorization-grant-type: client_credentials
+                        scope: api.internal
+                provider:
+                    account:
+                        token-uri: test-uri
+            resourceserver:
+                jwt:
+                    issuer-uri: https://test-issuer
+                    jwk-set-uri: https://test-issuer/jwks
     h2:
         console:
             enabled: true

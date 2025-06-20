@@ -1,12 +1,12 @@
-package com.synapse.account_service;
+package com.synapse.account_service.support;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
+
 @ActiveProfiles("test")
-@SpringBootTest(classes = {AccountServiceApplication.class})
-public class TestConfig {
-    
+public abstract class ApplicationIntegrationTest {
+
 }
