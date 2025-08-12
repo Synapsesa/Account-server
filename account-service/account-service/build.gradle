@@ -1,0 +1,25 @@
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation project(':account-service-api')
+}
+
+def generated = 'src/main/generated'
+
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+sourceSets {
+    main.java.srcDirs += [ generated ]
+}
+
+clean {
+    delete file(generated)
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
