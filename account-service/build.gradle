@@ -1,6 +1,6 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.5.0'
+	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -8,83 +8,88 @@ group = 'com.synapse'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+	sourceCompatibility = JavaVersion.VERSION_21
 }
 
-ext {
-	set('springCloudVersion', "2022.0.5")
-	set('eventuateTramVersion', "0.35.0.RELEASE")
-	set('eventuateTramSagasVersion', "0.24.0.RELEASE")
-	set('eventuateCommonVersion', "0.19.0.RELEASE")
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
 	mavenCentral()
 }
 
-dependencies {
-	// Simple DSL
-    implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter:${eventuateTramSagasVersion}"
-    // Saga Participant
-    implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant-starter:${eventuateTramSagasVersion}"
-    // Eventuate Tram Consumer
-    implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka:${eventuateTramVersion}"
-    // Eventuate Tram Producer JDBC
-    implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc:${eventuateTramVersion}"
-    // Eventuate Tram Consumer JDBC
-    implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-jdbc:${eventuateTramVersion}"
-	// Eventuate Tram Aggregate Domain Events
-    implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events:${eventuateTramVersion}"
-	// Security
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	// Auth0
-	implementation 'com.auth0:java-jwt:4.4.0'
-	// JPA
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	// PostgreSQL
-	runtimeOnly 'org.postgresql:postgresql'
-	// OAuth2 Client
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	// OAuth2 Resource Server
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
-	// Lombok
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	// Test
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.security:spring-security-test'
-	// Spring Web
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	//H2 Database
-	implementation 'com.h2database:h2'
-	// Validation
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	//QueryDSL
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-}
+subprojects{
+	apply plugin: 'java'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'org.springframework.boot'
 
-def generated = 'src/main/generated'
+	repositories {
+        mavenCentral()
+    }
 
-tasks.withType(JavaCompile) {
-    options.getGeneratedSourceOutputDirectory().set(file(generated))
-}
+	ext {
+		set('springCloudVersion', "2022.0.5")
+		set('eventuateTramVersion', "0.35.0.RELEASE")
+		set('eventuateTramSagasVersion', "0.24.0.RELEASE")
+		set('eventuateCommonVersion', "0.19.0.RELEASE")
+	}
 
-sourceSets {
-    main.java.srcDirs += [ generated ]
-}
+	dependencies {
+		// Simple DSL
+		implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-orchestration-simple-dsl-starter:${eventuateTramSagasVersion}"
+		// Saga Participant
+		implementation "io.eventuate.tram.sagas:eventuate-tram-sagas-spring-participant-starter:${eventuateTramSagasVersion}"
+		// Eventuate Tram Consumer
+		implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-kafka:${eventuateTramVersion}"
+		// Eventuate Tram Producer JDBC
+		implementation "io.eventuate.tram.core:eventuate-tram-spring-producer-jdbc:${eventuateTramVersion}"
+		// Eventuate Tram Consumer JDBC
+		implementation "io.eventuate.tram.core:eventuate-tram-spring-consumer-jdbc:${eventuateTramVersion}"
+		// Eventuate Tram Aggregate Domain Events
+		implementation "io.eventuate.tram.core:eventuate-tram-aggregate-domain-events:${eventuateTramVersion}"
+		// Security
+		implementation 'org.springframework.boot:spring-boot-starter-security'
+		// Auth0
+		implementation 'com.auth0:java-jwt:4.4.0'
+		// JPA
+		implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+		// PostgreSQL
+		runtimeOnly 'org.postgresql:postgresql'
+		// OAuth2 Client
+		implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+		// OAuth2 Resource Server
+		implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+		// Lombok
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+		// Test
+		testCompileOnly 'org.projectlombok:lombok'
+		testAnnotationProcessor 'org.projectlombok:lombok'
+		testImplementation 'org.springframework.security:spring-security-test'
+		// Spring Web
+		implementation 'org.springframework.boot:spring-boot-starter-web'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+		//H2 Database
+		implementation 'com.h2database:h2'
+		// Validation
+		implementation 'org.springframework.boot:spring-boot-starter-validation'
+		//QueryDSL
+		implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+		annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+		annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+		annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	}
 
-clean {
-    delete file(generated)
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+bootJar {
+    enabled = false
 }
