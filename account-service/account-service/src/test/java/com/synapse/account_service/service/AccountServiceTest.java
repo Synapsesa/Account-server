@@ -34,29 +34,29 @@ public class AccountServiceTest extends TestConfig {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    // @Test
-    // @DisplayName("회원가입 성공")
-    // void signUp_success() {
-    //     // given: 테스트 준비
-    //     SignUpRequest request = new SignUpRequest("test@example.com", "테스트유저", "password123");
+    @Test
+    @DisplayName("회원가입 성공")
+    void signUp_success() {
+        // given: 테스트 준비
+        SignUpRequest request = new SignUpRequest("test@example.com", "테스트유저", "password123");
         
-    //     given(memberRepository.findByUsernameAndEmail(anyString(), anyString())).willReturn(Optional.empty());
-    //     given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
-    //     given(memberRepository.save(any(Member.class))).willAnswer(invocation -> {
-    //         Member memberToSave = invocation.getArgument(0);
-    //         return memberToSave;
-    //     });
+        given(memberRepository.findByUsernameAndEmail(anyString(), anyString())).willReturn(Optional.empty());
+        given(passwordEncoder.encode(anyString())).willReturn("encodedPassword");
+        given(memberRepository.save(any(Member.class))).willAnswer(invocation -> {
+            Member memberToSave = invocation.getArgument(0);
+            return memberToSave;
+        });
         
-    //     // when: 실제 테스트할 메서드 호출
-    //     SignUpResponse response = accountService.registerMember(request);
+        // when: 실제 테스트할 메서드 호출
+        SignUpResponse response = accountService.registerMember(request);
         
-    //     // then: 결과 검증
-    //     assertThat(response.email()).isEqualTo("test@example.com");
-    //     assertThat(response.username()).isEqualTo("테스트유저");
+        // then: 결과 검증
+        assertThat(response.email()).isEqualTo("test@example.com");
+        assertThat(response.username()).isEqualTo("테스트유저");
         
-    //     verify(passwordEncoder).encode("password123");
-    //     verify(memberRepository).save(any(Member.class));
-    // }
+        verify(passwordEncoder).encode("password123");
+        verify(memberRepository).save(any(Member.class));
+    }
 
     @Test
     @DisplayName("이메일 또는 사용자명 중복으로 회원가입 실패")
