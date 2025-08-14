@@ -57,7 +57,9 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/accounts/signup", "/api/accounts/login", "/",
-                            "/api/accounts/token/reissue")
+                            "/api/accounts/token/reissue",
+                            "/actuator/health", "/actuator/info", 
+                            "/actuator/prometheus", "/actuator/metrics", "/actuator/mappings")
                     .permitAll()
                     .anyRequest().authenticated())
             .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,5 +1,8 @@
 server:
     port: 1001
+    tomcat:
+      mbeanregistry:
+        enabled: true
 
 spring:
     main:
@@ -16,3 +19,21 @@ spring:
             - security/application-db.yml
             - security/application-jwt.yml
             - security/application-oauth2.yml
+
+management:
+    server:
+        port: 6001
+    endpoints:
+        web:
+          exposure:
+            include: health,info,prometheus,mappings, metrics
+    endpoint:
+        health:
+          show-details: always
+    prometheus:
+      metrics:
+        export:
+          enabled: true
+    metrics:
+      tags:
+        application: ${spring.application.name}

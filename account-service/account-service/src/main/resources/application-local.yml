@@ -4,6 +4,8 @@ spring:
       url: jdbc:postgresql://${local-db.postgres.host}:${local-db.postgres.port}/${local-db.postgres.name}
       username: ${local-db.postgres.username}
       password: ${local-db.postgres.password}
+      hikari:
+        maximum-pool-size: 30 
 
   jpa:
     properties:
@@ -15,6 +17,10 @@ spring:
         hbm2ddl:
             auto: create
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 30
+        order_inserts: true
+        order_updates: true
     open-in-view: false
     show-sql: true
   
