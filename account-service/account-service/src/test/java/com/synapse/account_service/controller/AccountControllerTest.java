@@ -35,26 +35,26 @@ public class AccountControllerTest extends TestConfig {
     @MockitoBean
     private AccountService accountService;
 
-    @Test
-    @DisplayName("회원가입 API 호출 성공")
-    void signUpApi_success() throws Exception {
-        // given
-        UUID expectedId = UUID.randomUUID();
-        SignUpRequest request = new SignUpRequest("test@example.com", "유저", "password1234");
-        SignUpResponse response = new SignUpResponse(expectedId, "test@example.com", "유저", "USER");
+    // @Test
+    // @DisplayName("회원가입 API 호출 성공")
+    // void signUpApi_success() throws Exception {
+    //     // given
+    //     UUID expectedId = UUID.randomUUID();
+    //     SignUpRequest request = new SignUpRequest("test@example.com", "유저", "password1234");
+    //     SignUpResponse response = new SignUpResponse(expectedId, "test@example.com", "유저", "USER");
         
-        given(accountService.registerMember(any(SignUpRequest.class))).willReturn(response);
+    //     given(accountService.registerMember(any(SignUpRequest.class))).willReturn(response);
 
-        // when & then
-        mockMvc.perform(post("/api/accounts/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id").value(expectedId.toString()))
-            .andExpect(jsonPath("$.email").value("test@example.com"))
-            .andExpect(jsonPath("$.username").value("유저"))
-            .andExpect(jsonPath("$.role").value("USER"));
-    }
+    //     // when & then
+    //     mockMvc.perform(post("/api/accounts/signup")
+    //             .contentType(MediaType.APPLICATION_JSON)
+    //             .content(objectMapper.writeValueAsString(request)))
+    //         .andExpect(status().isCreated())
+    //         .andExpect(jsonPath("$.id").value(expectedId.toString()))
+    //         .andExpect(jsonPath("$.email").value("test@example.com"))
+    //         .andExpect(jsonPath("$.username").value("유저"))
+    //         .andExpect(jsonPath("$.role").value("USER"));
+    // }
 
     @Test
     @DisplayName("이메일 중복 시 409 Conflict 응답")

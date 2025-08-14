@@ -4,7 +4,9 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +36,9 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     // private final MemberDomainEventPublisher memberDomainEventPublisher;
 
+    @Async("signupTaskExecutor")
     @Transactional
-    public SignUpResponse registerMember(SignUpRequest request) {
+    public CompletableFuture<SignUpResponse> registerMember(SignUpRequest request) {
 
         String encodedPassword = passwordEncoder.encode(request.password());
         
@@ -60,12 +63,12 @@ public class AccountService {
 
         // memberDomainEventPublisher.publish(memberResult, memberAndEvents.events);
 
-        return new SignUpResponse(
+        return CompletableFuture.completedFuture(new SignUpResponse(
             memberResult.getId(), 
             memberResult.getEmail(),
             memberResult.getUsername(), 
             memberResult.getRole().name()
-        );
+        ));
     }
 
     private void createAndSetDefaultSubscription(Member member) {

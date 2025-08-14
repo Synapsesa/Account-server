@@ -1,6 +1,9 @@
 package com.synapse.account_service.controller;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +25,15 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) {
-        return ResponseEntity.status(CREATED).body(accountService.registerMember(request));
+    public CompletableFuture<ResponseEntity<SignUpResponse>> signUp(@Valid @RequestBody SignUpRequest request) {
+        CompletableFuture<SignUpResponse> futureResponse = accountService.registerMember(request);
+
+        return futureResponse
+                .thenApply(
+                    responseBody -> ResponseEntity.status(CREATED).body(responseBody)
+                )
+                .exceptionally(ex -> {
+                    return ResponseEntity.status(INTERNAL_SERVER_ERROR).build();
+                });
     }
 }
