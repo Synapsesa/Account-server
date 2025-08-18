@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synapse.account_service.service.AccountService;
 import com.synapse.account_service_api.dto.request.SignUpRequest;
 import com.synapse.account_service_api.dto.response.SignUpResponse;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

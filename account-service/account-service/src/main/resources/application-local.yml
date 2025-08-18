@@ -5,7 +5,18 @@ spring:
       username: ${local-db.postgres.username}
       password: ${local-db.postgres.password}
       hikari:
-        maximum-pool-size: 30 
+        maximum-pool-size: 70
+        minimum-idle: 10
+
+  data:
+    redis:
+      host: ${local-redis.host}
+      port: ${local-redis.port}
+      lettuce:
+        pool:
+          max-active: 32
+          max-idle: 16
+          min-idle: 8
 
   jpa:
     properties:
@@ -15,12 +26,13 @@ spring:
         highlight:
             sql: true
         hbm2ddl:
-            auto: create
+            auto: update
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           batch_size: 30
         order_inserts: true
         order_updates: true
+        default_batch_fetch_size: 100
     open-in-view: false
     show-sql: true
   

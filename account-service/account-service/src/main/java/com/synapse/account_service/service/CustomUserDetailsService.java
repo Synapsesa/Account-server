@@ -23,6 +23,6 @@ public class CustomUserDetailsService extends AbstractOAuth2UserService implemen
         ProviderUserRequest providerUserRequest = new ProviderUserRequest(member);
         ProviderUser providerUser = providerUser(providerUserRequest);
 
-        return new PrincipalUser(providerUser);
+        return new PrincipalUser(providerUser, member);
     }
 }

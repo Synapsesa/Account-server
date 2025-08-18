@@ -1,14 +1,18 @@
 package com.synapse.account_service.service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 import java.util.UUID;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synapse.account_service.domain.RefreshToken;
 import com.synapse.account_service.domain.entity.Member;
-import com.synapse.account_service.domain.entity.RefreshToken;
 import com.synapse.account_service.domain.repository.MemberRepository;
-import com.synapse.account_service.domain.repository.RefreshTokenRepository;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service.exception.JWTValidationException;
 import com.synapse.account_service.exception.NotFoundException;
@@ -22,29 +26,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenManagementService {
     private final JwtTokenService jwtTokenService;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
+    private final RedisTemplate<String, RefreshToken> refreshTokenRedisTemplate;
 
     public void saveOrUpdateRefreshToken(UUID memberId, TokenResult refreshToken) {
-        refreshTokenRepository.findById(memberId)
-            .ifPresentOrElse(
-                // 기존 토큰이 있으면, 새 토큰으로 값을 업데이트 (재로그인 시)
-                existingToken -> existingToken.updateToken(refreshToken.token()),
-                // 기존 토큰이 없으면, 새로 생성하여 저장 (최초 로그인)
-                () -> {
-                    RefreshToken newRefreshToken = new RefreshToken(memberId, refreshToken.token());
-                    refreshTokenRepository.save(newRefreshToken);
-                });
+        String redisKey = "refresh_token:" + memberId.toString();
+        RefreshToken refreshTokenEntity = new RefreshToken(memberId, refreshToken.token());
+        
+        long ttlSeconds = ChronoUnit.SECONDS.between(Instant.now(), refreshToken.expiresAt());
+        refreshTokenRedisTemplate.opsForValue().set(redisKey, refreshTokenEntity, ttlSeconds, TimeUnit.SECONDS);
     }
 
     public TokenResponse reissueTokens(String requestRefreshToken) {
         UUID memberId = jwtTokenService.getMemberIdFrom(requestRefreshToken);
+        String redisKey = "refresh_token:" + memberId.toString();
 
-        RefreshToken storedToken = refreshTokenRepository.findById(memberId)
-                .orElseThrow(() -> new JWTValidationException(ExceptionType.INVALID_REFRESH_TOKEN));
+        RefreshToken storedToken = refreshTokenRedisTemplate.opsForValue().get(redisKey);
+        if (storedToken == null) {
+            throw new JWTValidationException(ExceptionType.INVALID_REFRESH_TOKEN);
+        }
 
         if (!storedToken.getToken().equals(requestRefreshToken)) {
-            refreshTokenRepository.delete(storedToken);
+            refreshTokenRedisTemplate.delete(redisKey);
             throw new JWTValidationException(ExceptionType.TAMPERED_REFRESH_TOKEN);
         }
 
@@ -55,7 +58,10 @@ public class TokenManagementService {
 
         TokenResponse newTokens = jwtTokenService.createTokenResponse(memberId.toString(), role);
 
-        storedToken.updateToken(newTokens.refreshToken().token());
+        // Redis에 새로운 RefreshToken 저장
+        RefreshToken newRefreshToken = new RefreshToken(memberId, newTokens.refreshToken().token());
+        long ttlSeconds = Duration.between(Instant.now(), newTokens.refreshToken().expiresAt()).getSeconds();
+        refreshTokenRedisTemplate.opsForValue().set(redisKey, newRefreshToken, ttlSeconds, TimeUnit.SECONDS);
 
         return newTokens;
     }

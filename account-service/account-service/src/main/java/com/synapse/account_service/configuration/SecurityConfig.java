@@ -33,9 +33,9 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
+    private final ObjectMapper objectMapper;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOidcUserService customOidcUserService;
-    private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
 
 

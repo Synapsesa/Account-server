@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,7 @@ public class MemberRepositoryTest extends TestConfig {
     @BeforeEach
     void setUp() {
         testMember = Member.builder()
+                .id(UUID.randomUUID())
                 .email("test@example.com")
                 .password("encrypted_password")
                 .username("테스트유저")
@@ -64,6 +66,7 @@ public class MemberRepositoryTest extends TestConfig {
 
         // when: 동일한 이메일을 가진 새로운 회원을 만듭니다.
         Member duplicateMember = Member.builder()
+                .id(UUID.randomUUID())
                 .email("test@example.com") // 중복된 이메일
                 .password("another_password")
                 .role(MemberRole.USER)
@@ -104,6 +107,7 @@ public class MemberRepositoryTest extends TestConfig {
     void findByProviderAndRegistrationId_shouldReturnMember() {
         // given
         Member oauthMember = Member.builder()
+                .id(UUID.randomUUID())
                 .email("google_user@example.com")
                 .password("social_login_password") // 실제로는 비밀번호가 없을 수도 있습니다.
                 .username("구글유저")

@@ -5,7 +5,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,7 @@ import com.synapse.account_service.exception.DuplicatedException;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service_api.dto.request.SignUpRequest;
 import com.synapse.account_service_api.dto.response.SignUpResponse;
+
 import com.synapse.account_service_api.event.MemberDomainEvent;
 
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
@@ -33,9 +33,9 @@ public class AccountService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+
     // private final MemberDomainEventPublisher memberDomainEventPublisher;
 
-    @Async("signupTaskExecutor")
     @Transactional
     public SignUpResponse registerMember(SignUpRequest request) {
 

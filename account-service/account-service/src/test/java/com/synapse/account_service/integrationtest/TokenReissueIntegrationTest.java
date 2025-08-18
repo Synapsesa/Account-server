@@ -3,6 +3,9 @@ package com.synapse.account_service.integrationtest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -15,11 +18,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.synapse.account_service.TestConfig;
 import com.synapse.account_service.domain.entity.Member;
-import com.synapse.account_service.domain.entity.RefreshToken;
 import com.synapse.account_service.domain.enums.MemberRole;
 import com.synapse.account_service.domain.repository.MemberRepository;
-import com.synapse.account_service.domain.repository.RefreshTokenRepository;
 import com.synapse.account_service.service.JwtTokenService;
+import com.synapse.account_service.service.TokenManagementService;
 import com.synapse.account_service_api.dto.response.TokenResponse;
 
 import jakarta.servlet.http.Cookie;
@@ -33,10 +35,10 @@ public class TokenReissueIntegrationTest extends TestConfig {
     private JwtTokenService jwtTokenService;
     
     @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
+    private MemberRepository memberRepository;
     
     @Autowired
-    private MemberRepository memberRepository;
+    private TokenManagementService tokenManagementService;
 
     private Member testMember;
     private String validRefreshToken;
@@ -45,18 +47,19 @@ public class TokenReissueIntegrationTest extends TestConfig {
     void setUp() {
         // 테스트용 사용자 생성 및 저장
         testMember = Member.builder()
+                .id(UUID.randomUUID())
                 .email("reissue_user@example.com")
                 .username("reissue_user")
                 .password("password")
                 .role(MemberRole.USER)
                 .provider("local")
                 .build();
-        memberRepository.save(testMember);
+        testMember = memberRepository.save(testMember);
 
-        // 테스트용 유효한 리프레시 토큰 생성 및 DB에 저장
+        // 테스트용 유효한 리프레시 토큰 생성 및 Redis에 저장
         TokenResponse tokens = jwtTokenService.createTokenResponse(testMember.getId().toString(), "USER");
         validRefreshToken = tokens.refreshToken().token();
-        refreshTokenRepository.save(new RefreshToken(testMember.getId(), validRefreshToken));
+        tokenManagementService.saveOrUpdateRefreshToken(testMember.getId(), tokens.refreshToken());
     }
 
     @Test

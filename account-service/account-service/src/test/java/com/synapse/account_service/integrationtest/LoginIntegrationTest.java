@@ -3,6 +3,9 @@ package com.synapse.account_service.integrationtest;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.UUID;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -41,14 +44,16 @@ public class LoginIntegrationTest extends TestConfig{
 
     @BeforeEach
     void setUp() {
+        memberRepository.deleteAll();
         Member testMember = Member.builder()
+                .id(UUID.randomUUID())
                 .email("test_user1234@example.com")
                 .username(TEST_USERNAME)
                 .password(passwordEncoder.encode(TEST_PASSWORD))
                 .role(MemberRole.USER)
                 .provider("local")
                 .build();
-        memberRepository.save(testMember);
+        testMember = memberRepository.save(testMember);
     }
 
     @Test
