@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
-import com.synapse.account_service.TestConfig;
 import com.synapse.account_service.domain.Attributes;
 import com.synapse.account_service.domain.ProviderUser;
 import com.synapse.account_service.domain.entity.Member;
