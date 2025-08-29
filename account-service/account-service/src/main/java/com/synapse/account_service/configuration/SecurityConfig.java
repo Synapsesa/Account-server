@@ -33,9 +33,9 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final LoginSuccessHandler loginSuccessHandler;
     private final LoginFailureHandler loginFailureHandler;
+    private final ObjectMapper objectMapper;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomOidcUserService customOidcUserService;
-    private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
 
 
@@ -57,7 +57,9 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/api/accounts/signup", "/api/accounts/login", "/",
-                            "/api/accounts/token/reissue")
+                            "/api/accounts/token/reissue",
+                            "/actuator/health", "/actuator/info", 
+                            "/actuator/prometheus", "/actuator/metrics", "/actuator/mappings")
                     .permitAll()
                     .anyRequest().authenticated())
             .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

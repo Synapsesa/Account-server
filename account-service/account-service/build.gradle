@@ -4,6 +4,13 @@ repositories {
 
 dependencies {
 	implementation project(':account-service-api')
+
+    //Spring Actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	//Spring Prometheus
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 def generated = 'src/main/generated'

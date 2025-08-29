@@ -18,6 +18,7 @@ import com.synapse.account_service.exception.DuplicatedException;
 import com.synapse.account_service.exception.ExceptionType;
 import com.synapse.account_service_api.dto.request.SignUpRequest;
 import com.synapse.account_service_api.dto.response.SignUpResponse;
+
 import com.synapse.account_service_api.event.MemberDomainEvent;
 
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
@@ -32,6 +33,7 @@ public class AccountService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+
     // private final MemberDomainEventPublisher memberDomainEventPublisher;
 
     @Transactional
