@@ -11,19 +11,23 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.synapse.account_service.TestConfig;
 import com.synapse.account_service.domain.entity.Member;
 import com.synapse.account_service.domain.repository.MemberRepository;
+import com.synapse.account_service.eventuate.publisher.MemberDomainEventPublisher;
+import com.synapse.account_service.eventuate.publisher.SubscriptionDomainEventPublisher;
 import com.synapse.account_service_api.dto.request.SignUpRequest;
 import com.synapse.account_service_api.dto.response.SignUpResponse;
 import com.synapse.account_service.exception.DuplicatedException;
 
 
-public class AccountServiceTest extends TestConfig {
+@ExtendWith(MockitoExtension.class)
+public class AccountServiceTest {
 
     @InjectMocks
     private AccountService accountService;
@@ -33,6 +37,12 @@ public class AccountServiceTest extends TestConfig {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private MemberDomainEventPublisher memberDomainEventPublisher;
+
+    @Mock
+    private SubscriptionDomainEventPublisher subscriptionDomainEventPublisher;
 
     @Test
     @DisplayName("회원가입 성공")

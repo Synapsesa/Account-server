@@ -21,7 +21,6 @@ import lombok.*;
     @Index(name = "idx_member_username", columnList = "username")
 })
 public class Member extends BaseEntity {
-
     @Id
     @Column(name = "member_id", columnDefinition = "uuid")
     private UUID id;
@@ -76,9 +75,9 @@ public class Member extends BaseEntity {
                 .role(MemberRole.USER)
                 .build();
         
-        MemberRegisteredEvent event = new MemberRegisteredEvent(userId, email, username);
+        MemberRegisteredEvent memberEvent = new MemberRegisteredEvent(userId, email, username);
 
-        return new ResultWithDomainEvents<>(member, event);
+        return new ResultWithDomainEvents<>(member, memberEvent);
     }
 
     public static ResultWithDomainEvents<Member, MemberDomainEvent> linkSocialAccount(
@@ -91,9 +90,9 @@ public class Member extends BaseEntity {
                 .role(MemberRole.USER)
                 .build();
         
-        SocialAccountLinkedEvent event = new SocialAccountLinkedEvent(userId, provider, registrationId);
+        SocialAccountLinkedEvent socialEvent = new SocialAccountLinkedEvent(userId, provider, registrationId);
 
-        return new ResultWithDomainEvents<>(member, event);
+        return new ResultWithDomainEvents<>(member, socialEvent);
     }
 
     public void setSubscription(Subscription subscription) {

@@ -16,8 +16,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 
 import com.synapse.account_service.TestConfig;
@@ -26,14 +28,23 @@ import com.synapse.account_service.domain.ProviderUser;
 import com.synapse.account_service.domain.entity.Member;
 import com.synapse.account_service.domain.repository.MemberRepository;
 import com.synapse.account_service.domain.socials.GoogleUser;
+import com.synapse.account_service.eventuate.publisher.MemberDomainEventPublisher;
+import com.synapse.account_service.eventuate.publisher.SubscriptionDomainEventPublisher;
 
-class MemberRegistrationServiceTest extends TestConfig {
+@ExtendWith(MockitoExtension.class)
+class MemberRegistrationServiceTest {
 
     @InjectMocks
     private MemberRegistrationService memberRegistrationService;
 
     @Mock
     private MemberRepository memberRepository;
+
+    @Mock
+    private MemberDomainEventPublisher memberDomainEventPublisher;
+
+    @Mock
+    private SubscriptionDomainEventPublisher subscriptionDomainEventPublisher;
 
     private final String provider = "google";
     private final String providerId = "123456789";
@@ -114,4 +125,4 @@ class MemberRegistrationServiceTest extends TestConfig {
         verify(existingMember, never()).linkSocialAccount(anyString(), anyString());
         assertThat(result).isEqualTo(existingMember);
     }
-} 
+}

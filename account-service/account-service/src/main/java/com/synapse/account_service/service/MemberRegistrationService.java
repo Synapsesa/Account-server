@@ -14,8 +14,10 @@ import com.synapse.account_service.domain.entity.Member;
 import com.synapse.account_service.domain.entity.Subscription;
 import com.synapse.account_service.domain.enums.SubscriptionTier;
 import com.synapse.account_service.domain.repository.MemberRepository;
-// import com.synapse.account_service.eventuate.publisher.MemberDomainEventPublisher;
+import com.synapse.account_service.eventuate.publisher.MemberDomainEventPublisher;
+import com.synapse.account_service.eventuate.publisher.SubscriptionDomainEventPublisher;
 import com.synapse.account_service_api.event.MemberDomainEvent;
+import com.synapse.account_service_api.event.SubscriptionDomainEvent;
 
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberRegistrationService {
 
     private final MemberRepository memberRepository;
-    // private final MemberDomainEventPublisher memberDomainEventPublisher;
+    private final MemberDomainEventPublisher memberDomainEventPublisher;
+    private final SubscriptionDomainEventPublisher subscriptionDomainEventPublisher;
 
     @Transactional
     public Member registerOauthUser(String provider, ProviderUser providerUser) {
@@ -53,23 +56,26 @@ public class MemberRegistrationService {
 
         Member memberResult = memberAndEvents.result;
 
-        createAndSetDefaultSubscription(memberResult);
-
         memberRepository.save(memberResult);
 
-        // memberDomainEventPublisher.publish(memberResult, memberAndEvents.events);
+        memberDomainEventPublisher.publish(memberResult, memberAndEvents.events);
+        publishSubscriptionEvent(memberResult);
 
         return memberResult;
     }
 
-    private void createAndSetDefaultSubscription(Member member) {
-        ZonedDateTime nextRenewalDate = ZonedDateTime.now(ZoneId.systemDefault()).plusDays(1).with(LocalTime.MIDNIGHT); // 무료 사용자는 자정 초기화
+    private void publishSubscriptionEvent(Member memberResult) {
+        ZonedDateTime nextRenewalDate = ZonedDateTime.now(ZoneId.systemDefault()).plusDays(1).with(LocalTime.MIDNIGHT);
 
-        Subscription freeSubscription = Subscription.builder()
-                .tier(SubscriptionTier.FREE)
-                .nextRenewalDate(nextRenewalDate)
-                .build();
-        
-        member.setSubscription(freeSubscription);
+        ResultWithDomainEvents<Subscription, SubscriptionDomainEvent> subscriptionAndEvents = Subscription.register(
+                memberResult.getId(),
+                memberResult,
+                SubscriptionTier.FREE,
+                nextRenewalDate);
+
+        Subscription subscriptionResult = subscriptionAndEvents.result;
+
+        memberResult.setSubscription(subscriptionResult);
+        subscriptionDomainEventPublisher.publish(subscriptionResult, subscriptionAndEvents.events);
     }
 }
