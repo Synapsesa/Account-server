@@ -55,6 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error(String.format(LOG_FORMAT_ERROR_PATTERN, 
                 request.getMethod(), 
                 request.getRequestURI(),
+                e.getClass().getSimpleName(),
                 e.getClass().getName(), 
                 e.getMessage()));
     }

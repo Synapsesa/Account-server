@@ -1,4 +1,8 @@
 spring:
+  jackson:
+    deserialization:
+      adjust-dates-to-context-time-zone: false
+
   datasource:
       driver-class-name: org.postgresql.Driver
       url: jdbc:postgresql://${local-db.postgres.host}:${local-db.postgres.port}/${local-db.postgres.name}
@@ -26,7 +30,7 @@ spring:
         highlight:
             sql: true
         hbm2ddl:
-            auto: update
+            auto: create
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           batch_size: 30
@@ -78,10 +82,10 @@ eventuate:
         auto-offset-reset: latest
         enable-auto-commit: true
       destinations:
-        accountService:
-          destination: accountService
+        paymentService:
+          destination: paymentService
           dlq:
-            destination: accountService-dlq
+            destination: paymentService-dlq
     kafka:
       message:
         serializer: io.eventuate.messaging.kafka.basic.consumer.DefaultKafkaMessageSerializer
